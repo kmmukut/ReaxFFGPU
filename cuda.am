@@ -1,0 +1,14 @@
+# NOTE:
+# SUFFIXES is moved outside this file
+# so that one can issue a SUFFIXES += .cu
+# in case SUFFIXES is already defined (like for example
+# in autotroll.am)
+#SUFFIXES = .cu
+
+AM_V_NVCC = $(AM_V_NVCC_@AM_V@)
+AM_V_NVCC_ = $(AM_V_NVCC_@AM_DEFAULT_V@)
+AM_V_NVCC_0 = @echo "  NVCC    " $@;
+AM_V_NVCC_1 =
+
+.cu.o:
+	$(AM_V_NVCC)$(NVCC) $(AM_NVCCFLAGS) $(NVCCFLAGS) -o $@ -c $<
