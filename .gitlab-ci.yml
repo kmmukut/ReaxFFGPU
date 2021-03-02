@@ -1,0 +1,35 @@
+variables:
+  OMP_NUM_THREADS: 1
+  GIT_STRATEGY: clone
+  APPLICATION: PuReMD
+
+stages:
+  - build
+  - test
+
+compile:
+  stage: build
+  artifacts:
+    name: "${CI_JOB_STAGE}_${CI_COMMIT_REF_NAME}"
+    paths: 
+      - sPuReMD/bin
+      - sPuReMD/lib
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq autoconf automake libtool gcc
+  script:
+    - echo "[INFO] Building..."
+    - autoreconf -ivf && ./configure && make
+    - echo "[INFO] Done building"
+
+run:
+  stage: test
+  dependencies:
+    - compile
+  script:
+    - echo "[INFO] Testing..."
+    - sPuReMD/bin/spuremd data/benchmarks/water/water_6540.pdb data/benchmarks/water/ffield.water environ/control_water
+    - head -n 2 water_6540_notab_qeq.out && tail -n 2 water_6540_notab_qeq.out
+    - echo "[INFO] Done testing"
+
+after_script:
+  - echo "[INFO] Complete"
